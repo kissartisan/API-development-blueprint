@@ -38,6 +38,16 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
+            // $stableVersion = config('app.api.stable');
+
+            // Route::group([
+            //     'middleware' => ['api', 'api.version:stable'],
+            //     'namespace'  => "{$this->namespace}\\$stableVersion",
+            //     'prefix'     => 'api',
+            // ], function ($router) {
+            //     require base_path("routes/api_{$stableVersion}.php");
+            // });
+
             Route::group([
                 'middleware' => ['api', 'api.version:v1'],
                 'namespace'  => "{$this->namespace}\V1",
