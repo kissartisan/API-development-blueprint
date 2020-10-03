@@ -38,34 +38,20 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            // $stableVersion = config('app.api.stable');
+            $this->routeGroup(config('app.api.default'));
+            $this->routeGroup(config('app.api.stable'));
+            $this->routeGroup(config('app.api.latest'));
+        });
+    }
 
-            // Route::group([
-            //     'middleware' => ['api', 'api.version:stable'],
-            //     'namespace'  => "{$this->namespace}\\$stableVersion",
-            //     'prefix'     => 'api',
-            // ], function ($router) {
-            //     require base_path("routes/api_{$stableVersion}.php");
-            // });
-
-            Route::group([
-                'middleware' => ['api', 'api.version:v1'],
-                'namespace'  => "{$this->namespace}\V1",
-                'prefix'     => 'api/v1',
-            ], function ($router) {
-                require base_path('routes/api.php');
-            });
-            Route::group([
-                'middleware' => ['api', 'api.version:v2'],
-                'namespace'  => "{$this->namespace}\V2",
-                'prefix'     => 'api/v2',
-            ], function ($router) {
-                require base_path('routes/api_v2.php');
-            });
-
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/web.php'));
+    private function routeGroup($config)
+    {
+        Route::group([
+            'middleware' => ['api', "api.version:{$config['version']}"],
+            'namespace'  => "{$this->namespace}\\{$config['version']}",
+            'prefix'     => "api/{$config['url']}",
+        ], function ($router) use ($config) {
+            require base_path("routes/api/{$config['version']}.php");
         });
     }
 

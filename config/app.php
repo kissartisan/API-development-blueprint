@@ -132,7 +132,18 @@ return [
     */
 
     'api' => [
-        'stable' => 'v1'
+        'default' => [
+            'version' => 'v1',
+            'url' => ''
+        ],
+        'stable' => [
+            'version' => 'v1',
+            'url' => 'v1'
+        ],
+        'latest' =>  [
+            'version' => 'v2',
+            'url' => 'v2'
+        ]
     ],
 
     /*
