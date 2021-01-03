@@ -26,7 +26,8 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string|null
      */
-    protected $namespace = 'App\\Http\\Controllers\\Api';
+    protected $apiNamespace = 'App\\Http\\Controllers\\Api';
+    protected $webNamespace = 'App\\Http\\Controllers\\Web';
 
     /**
      * Define your route model bindings, pattern filters, etc.
@@ -38,21 +39,41 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            $this->routeGroup(config('app.api.default'));
-            $this->routeGroup(config('app.api.stable'));
-            $this->routeGroup(config('app.api.latest'));
+            $this->createApiRoute(config('app.api.default'));
+            $this->createApiRoute(config('app.api.stable'));
+            $this->createApiRoute(config('app.api.latest'));
+
+            $this->createWebRoute();
         });
     }
 
-    private function routeGroup($config)
+    /**
+     * Create an API route
+     *
+     * @param array $config
+     * @return void
+     */
+    private function createApiRoute($config)
     {
         Route::group([
             'middleware' => ['api', "api.version:{$config['version']}"],
-            'namespace'  => "{$this->namespace}\\{$config['version']}",
+            'namespace'  => "{$this->apiNamespace}\\{$config['version']}",
             'prefix'     => "api/{$config['url']}",
         ], function ($router) use ($config) {
             require base_path("routes/api/{$config['version']}.php");
         });
+    }
+
+    /**
+     * Create a web route
+     *
+     * @return void
+     */
+    private function createWebRoute()
+    {
+        Route::middleware('web')
+            ->namespace($this->webNamespace)
+            ->group(base_path('routes/web.php'));
     }
 
     /**
